@@ -83,22 +83,32 @@ class MainWindow(QMainWindow):
         # --- Populate UI with Initial Data ---
         self._load_initial_state()
 
+    # NEW version in src/ui/main_window.py
+
     def _load_initial_state(self):
         """Uses the initial adapter and details to populate the UI on startup."""
         if not self.active_adapter:
             return
 
+        # Get the specific database name chosen in the WelcomeWindow
         db_name = self.connection_details.get("database")
+
+        # Get the user@host for the top bar label
         conn_name = f"{self.connection_details.get('user')}@{self.connection_details.get('host')}"
 
-        # Populate Column 1 with the active connection
-        self.col1_widget.add_connection(conn_name, self.db_icon)
-        # TODO: Add logic to pre-select this item
+        # --- Populate Column 1 ---
+        # Clear any previous items and add the new database workspace
+        self.col1_widget.clear()
+        self.col1_widget.add_connection(db_name, self.db_icon)
+        # TODO: We can add logic to automatically select this new item.
+        # self.col1_widget.setCurrentRow(0)
 
-        # Populate Column 2 with tables from the selected database
+        # --- Populate Column 2 ---
+        # Tell the ObjectExplorer to list the tables for this specific database
         self.col2_widget.populate_tables(self.active_adapter, db_name)
 
-        # Update the Top Bar label
+        # --- Update the Top Bar Label ---
+        # Display the full connection path for clarity
         self.connection_label.setText(f"{conn_name} : {db_name}")
 
     def _on_table_selected(self, table_name):
